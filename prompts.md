@@ -1,10 +1,8 @@
-> Detalla en esta sección los prompts principales utilizados durante la creación del proyecto, que justifiquen el uso de asistentes de código en todas las fases del ciclo de vida del desarrollo. Esperamos un máximo de 3 por sección, principalmente los de creación inicial o  los de corrección o adición de funcionalidades que consideres más relevantes.
-Puedes añadir adicionalmente la conversación completa como link o archivo adjunto si así lo consideras
+# Registro de Prompts y Uso de IA
 
-> **Nota:** cuando un mismo prompt aplica a varias secciones, se muestra completo una sola vez y se referencia desde el resto para no duplicar contenido.
+> Detalla en esta sección los prompts principales utilizados durante la creación del proyecto, que justifiquen el uso de asistentes de código en todas las fases del ciclo de vida del desarrollo. 
 
 ## Índice
-
 1. [Descripción general del producto](#1-descripción-general-del-producto)
 2. [Arquitectura del sistema](#2-arquitectura-del-sistema)
 3. [Modelo de datos](#3-modelo-de-datos)
@@ -17,206 +15,107 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ## 1. Descripción general del producto
 
-**Prompt 1:**
-```
-Actúa como PMO y Arquitecto de Soluciones de IA experto en FinTech y SaaS.
-Quiero hacer un brainstorming para un nuevo proyecto de "Ticketing/Facturación Inteligente".
+**Prompt 1 (Brainstorming Inicial):**
+> "Actúa como PMO y Arquitecto de Soluciones de IA experto en FinTech y SaaS. Quiero hacer un brainstorming para un nuevo proyecto de \"Ticketing/Facturación Inteligente\". La idea base del flujo es: 1. Sube foto. 2. Extrae datos (OCR/LLM). 3. Clasifica y activa acciones. Propónme ideas divididas en: Casos de Uso, Arquitectura, Desafíos Técnicos y Monetización (3 a 4 ideas por categoría)."
 
-La idea base del flujo es:
-1. Un usuario registrado sube una foto de un ticket, recibo o factura a la plataforma.
-2. El sistema procesa la imagen para extraer los datos clave (OCR/LLM).
-3. El sistema clasifica el documento y detecta/activa ciertas "acciones" automáticas
-   basándose en el contenido del ticket.
+**Prompt 2 (Delimitación del Alcance):**
+> "Ayúdame a redactar el Alcance del Proyecto de manera clara y profesional. Necesito documentar todo el sistema a nivel general, pero dejando perfectamente estipulado que la implementación de esta fase se limitará únicamente al módulo de 'Gastos Generales' y a 3 Historias de Usuario. Asegúrate de marcar bien la frontera entre lo que se documenta y lo que se construye."
 
-Para iniciar este brainstorming, propónme ideas divididas en las siguientes 4 categorías:
-- Casos de Uso y "Acciones" Clave
-- Arquitectura Tecnológica Recomendada
-- Desafíos Técnicos y UX
-- Modelos de Monetización
+**Prompt 3 (Plan de Ejecución):**
+> "Vamos a crear un paso a paso para implementar el proyecto cuyo contexto se encuentra en el RFP [...]. NO GENERES DOCUMENTACION, solo quiero el paso a paso para implementarlo siguiendo los requerimientos."
 
-Preséntame de 3 a 4 ideas potentes por cada categoría para empezar a debatir.
-```
-*(Brainstorming inicial de producto, previo a la redacción del RFP.)*
-
-**Prompt 2:**
-> "vamos a crear un paso a paso para implementar el proyecto cuyo contexto se encuentra en el RFP [...]. NO GENERES DOCUMENTACION, solo quiero el paso a paso para implementarlo siguiendo los requerimientos"
-
-*(Usado para obtener una hoja de ruta cruzando el RFP, las instrucciones del curso y buenas prácticas 80/20, sin generar todavía el README.)*
-
-**Prompt 3:**
-> "Alcance quiero ponerlo todo y aclarar que solo implementare 'Gastos Generales' y solo 3 historias, es decir se documenta todo y se especifica lo que se implementará."
-
-*(Corrigió el alcance por defecto que había propuesto la IA y exigió separar explícitamente "documentado" de "implementado"; resultado: cada sección del README lleva etiqueta de estado **[MVP]** / **[DOCUMENTADO]**. Este mismo prompt es determinante también en la sección 5, Historias de Usuario.)*
+**💡 Nota explicativa (Criterio Humano):** 
+Guié al LLM para no quedarse en una lluvia de ideas teórica, forzando una delimitación estricta entre el diseño teórico completo del RFP y el MVP ejecutable. La exigencia de separar visualmente `[MVP]` de `[DOCUMENTADO]` garantizó que las posteriores generaciones de código no alucinaran funcionalidades fuera de alcance.
 
 ---
 
 ## 2. Arquitectura del Sistema
 
-### **2.1. Diagrama de arquitectura:**
+**Prompt 1 (Selección de Stack):**
+> "Vamos a centrarnos en la fase 1, pero antes elijamos el stack tecnológico [...]. En el backend si podemos utilizar nodeJs incluso NestJs, ya seria un stack conocido. Planteame opciones que cubran las especificaciones del proyecto y sus PROS y Contras."
 
-**Prompt 1:** *No hubo un prompt dedicado en exclusiva a pedir el diagrama. Se obtuvo como parte de la respuesta al prompt de especificación técnica (ver Prompt 2 en 2.2), que solicitaba explícitamente la "arquitectura general del sistema (componentes y relaciones)".*
+**Prompt 2 (Especificación Técnica Core):**
+> "Actúa como Arquitecto de Software senior con experiencia en AWS y sistemas de procesamiento de documentos con OCR y LLM. A partir del siguiente PRD, genera la especificación técnica del MVP con: Arquitectura general, Diseño OCR, Diseño LLM, Flujo HITL, Modelo de datos, Auditoría, S3, Entra ID y Entornos."
 
-### **2.2. Descripción de componentes principales:**
+**Prompt 3 (Seguridad y Privacidad PII):**
+> "Actúa como un desarrollador senior experto en ciberseguridad y NestJS. Acabo de implementar un servicio OCR que extrae texto bruto. Antes de enviar este texto a un LLM, necesito anonimizar PII por el RGPD. Crea un `PiiSanitizerService` que utilice Regex para reemplazar con '[REDACTED]': DNI/NIE/CIF, emails, teléfonos (formato España) e IBAN."
 
-**Prompt 1:**
-> "vamos a centrarnos en la fase 1, pero antes elijamos el stack tecnológico [...]. En el backend si podemos utilizar nodeJs incluso NestJs, ya seria un stack conocido. Planteame opciones que cubran las especificaciones del proyecto y sus PROS y Contras"
-
-*(Se pidió expresamente una comparativa con pros/contras en vez de una recomendación cerrada, para decidir con criterio propio. La IA propuso 4 alternativas de backend y 4 de frontend evaluadas contra los requisitos concretos del RFP —OCR, LLM propio, SSO Entra ID, auditoría, exportación a Excel, AWS—. Decisión final: **NestJS (Node/TS)** en backend, **React + TypeScript** en frontend.)*
-
-**Prompt 2:**
-```
-Actúa como Arquitecto de Software senior con experiencia en AWS y sistemas de procesamiento
-de documentos con OCR y LLM.
-
-A partir del siguiente PRD, genera la especificación técnica del MVP con:
-- Arquitectura general del sistema (componentes y relaciones)
-- Diseño de la capa OCR: tecnología, configuración, manejo de errores
-- Diseño de la capa LLM: modelo, prompts base, manejo de baja confianza
-- Diseño del flujo HITL: puntos de intervención humana, interfaz mínima
-- Modelo de datos (entidades, relaciones, campos clave)
-- Diseño del log de auditoría (estructura, inmutabilidad, retención)
-- Estrategia de almacenamiento de ficheros adjuntos en AWS S3
-- Integración SSO con Microsoft Entra ID
-- Entornos: separación pre-producción / producción en AWS
-- Estimación de costes de infraestructura (orden de magnitud)
-
-PRD de referencia:
-[ADJUNTAR O PEGAR EL PRD]
-```
-*(Este prompt cubre varias subsecciones de arquitectura a la vez; se referencia también desde 2.4, 2.5 y desde el Modelo de Datos en la sección 3.)*
-
-### **2.3. Descripción de alto nivel del proyecto y estructura de ficheros**
-
-**Prompt 1:** *Sin prompt dedicado todavía. La estructura de ficheros del repositorio se definirá en la Entrega 2, al generar el código con el coding agent (NestJS backend / React frontend).*
-
-### **2.4. Infraestructura y despliegue**
-
-**Prompt 1:** *Mismo prompt que en 2.2 (Prompt 2). Cubre la estrategia de almacenamiento de ficheros adjuntos en AWS S3, la separación de entornos pre-producción/producción y la estimación de costes de infraestructura.*
-
-### **2.5. Seguridad**
-
-**Prompt 1:** *Mismo prompt que en 2.2 (Prompt 2). Cubre la integración SSO con Microsoft Entra ID y el diseño del log de auditoría (estructura, inmutabilidad, retención).*
-
-*(Nota: el prompt pide únicamente el diseño de la integración; no incluye credenciales ni secretos reales.)*
-
-### **2.6. Tests**
-
-**Prompt 1:** *Sin prompt dedicado todavía. Los prompts usados para generar tests se documentarán en la Entrega 2, junto con el código.*
+**💡 Nota explicativa (Criterio Humano):**
+No dejé la elección de la arquitectura al azar. Validé que el stack propuesto incluyera NestJS (aprovechando experiencia previa) y garanticé la privacidad de datos "by design" obligando al agente a crear una capa de sanitización (Regex) antes de exponer cualquier string al servicio de LLM multimodal.
 
 ---
 
-### 3. Modelo de Datos
+## 3. Modelo de Datos
 
-**Prompt 1:**
-> "para la primera entrega cumplimenta el 'template readme.md'. con el contexto que tenemos." 
+**Prompt 1 (Corrección de Relaciones - Many-to-Many):**
+> "El modelo actual trata el 'Rol' como un campo simple, pero los roles deberían ser una entidad propia en la base de datos, y un usuario debe poder tener MÚLTIPLES roles asignados al mismo tiempo (relación Many-to-Many). Realiza la refactorización en el modelo (Entidades), Lógica de Negocio, Middlewares y Migraciones."
 
-*(No hubo un prompt dedicado solo al modelo de datos; se derivó del contexto acumulado —RFP + decisión de alcance—. Ajuste humano: exigir que el modelo cubriera el dominio completo —incluyendo Combustible— aunque el MVP use solo un subconjunto, marcando qué entidades participan realmente en las 3 historias implementadas. Resultado: diagrama ER completo en Mermaid, con las entidades del MVP diferenciadas de las solo documentadas.)*
+**Prompt 2 (Auditoría e Inmutabilidad):**
+> "Revisa todos los documentos de especificación existentes en el workspace. Verifica si el ciclo de vida de estados está modelado de forma estricta. Reglas: 5. Bloqueo Definitivo (Inmutabilidad): En el instante en que el ticket pasa a estado APPROVED, la entidad queda bloqueada. Las especificaciones deben documentar la prohibición de cualquier edición o eliminación posterior."
 
-**Prompt 2:** *Mismo prompt que en 2.2 (Prompt 2), que solicita explícitamente el "Modelo de datos (entidades, relaciones, campos clave)" como parte de la especificación técnica.*
-
----
-
-### 4. Especificación de la API
-
-**Prompt 1:** *Mismo prompt que en la sección 3 ("cumplimenta el 'template readme.md'..."). No hubo un prompt dedicado en exclusiva a la API; se derivó directamente de las 3 historias MVP confirmadas y de la lista de funcionalidades documentadas, manteniendo trazabilidad historia → endpoint.*
-
-**Pendiente de ajuste humano:** validar en la Entrega 2, con código real, que los endpoints propuestos coinciden con la implementación.
+**💡 Nota explicativa (Criterio Humano):**
+El agente propuso inicialmente un diseño de base de datos ingenuo (roles como strings y entidades mutables). Intervine directamente para refactorizar la base de datos hacia una relación transaccional madura (N:M en PostgreSQL) e impuse reglas de inmutabilidad financiera en los estados, asegurando que el diseño de BD reflejara reglas de negocio reales.
 
 ---
 
-### 5. Historias de Usuario
+## 4. Especificación de la API
 
-**Prompt 1:**
-> "Ayúdame a redactar el Alcance del Proyecto de manera clara y profesional. Necesito documentar todo el sistema a nivel general, pero dejando perfectamente estipulado que la implementación de esta fase se limitará únicamente al módulo de 'Gastos Generales' y a 3 Historias de Usuario. Asegúrate de marcar bien la frontera entre lo que se documenta y lo que se construye"
+**Prompt 1 (Diseño de Endpoints y Roles):**
+> "Lee detenidamente las especificaciones. Basándote en el stack, implementa la gestión de usuarios básica. Incluye endpoints CRUD, registro/login con JWT y establece la regla de negocio de que el registro por Entra ID asigne por defecto el rol de 'Empleado'. Escribe código modular."
 
-*(Mismo prompt de la sección 1; determinante para acotar el alcance a 3 historias del módulo Gastos Generales.)*
+**Prompt 2 (Depuración del Flujo API - OCR):**
+> "Tengo un bug en el flujo de subida: cuando subo un PDF, el sistema devuelve un concepto estático. Haz un rastreo (trace) del flujo: 1. Envío desde el Frontend (FormData). 2. Controlador (Multer). 3. Servicio OCR/LLM. 4. Integración. Identifica en qué línea se está rompiendo y devuelve el dato real."
 
-**Prompt 2:**
-> "Sí, esas 3"
+**Prompt 3 (Refactor del Flujo HITL - Modales):**
+> "Al hacer clic en 'Modificar', el sistema debe realizar una petición GET para obtener los datos más recientes. Una vez obtenidos, abre un Modal. El botón Confirmar ejecuta un UPDATE (PATCH) hacia `/opsx-update`. Si es exitoso, cierra el popup y refresca la lista."
 
-*(Confirmación explícita del usuario ante la propuesta de 3 historias Must-Have generada por la IA, que cubrían el flujo end-to-end completo: captura → HITL → aprobación. El humano validó la propuesta mediante selección expresa, en lugar de dejarla pasar sin revisión.)*
-
-
----
-
-### 6. Tickets de Trabajo
-
-*Nota: el MVP solo implementa el módulo "Gastos Generales" (ver alcance en la sección 1), por lo que los tickets siguientes se acotan a ese módulo.*
-
-**Prompt 1:**
-```
-Eres un sistema de extracción de datos de documentos financieros.
-El usuario ha indicado que este documento pertenece al módulo: [COMBUSTIBLE / GASTOS GENERALES].
-
-Analiza la imagen adjunta y extrae los siguientes campos en formato JSON estricto.
-Si un campo no está presente en el documento, devuelve null para ese campo.
-Indica el nivel de confianza de cada campo extraído: alto / medio / bajo.
-
-Para el módulo GASTOS GENERALES, extrae:
-{
-  "fecha": "",
-  "concepto": "",
-  "importe_total": "",
-  "base_imponible": "",
-  "iva_porcentaje": "",
-  "iva_importe": "",
-  "forma_pago": "",          // "visa" | "efectivo" | null
-  "proveedor": "",
-  "nif_proveedor": "",
-  "area_sugerida": "",       // "comida" | "estancia" | "vuelo" | "parking" | "otros" | null
-  "confianza": {
-    "fecha": "",
-    "importe_total": "",
-    "area_sugerida": ""
-  }
-}
-
-Devuelve únicamente el JSON. Sin texto adicional, sin bloques de código markdown.
-```
-*(Extracción de datos de ticket con LLM multimodal; ticket de la historia de "captura".)*
-
-**Prompt 2:**
-```
-Valida el siguiente JSON extraído de un ticket financiero.
-Aplica las siguientes reglas de negocio y devuelve un JSON con el resultado:
-
-Reglas de validación:
-1. base_imponible + iva_importe debe ser igual a importe_total (tolerancia: ±0.02 €).
-2. La fecha no puede ser futura ni anterior a 5 años desde hoy.
-3. El importe_total debe ser un número positivo mayor que 0.
-4. Si forma_pago es null, marca el campo como pendiente de revisión humana.
-5. Si area_sugerida es null, marca el campo como pendiente de selección por el usuario.
-
-Devuelve:
-{
-  "valido": true | false,
-  "errores": [],             // lista de errores bloqueantes
-  "advertencias": [],        // lista de avisos no bloqueantes
-  "campos_pendientes": []    // campos que requieren revisión o completado por el usuario
-}
-```
-*(Validación de datos extraídos; ticket de la historia de "revisión/HITL".)*
-
-**Prompt 3:**
-```
-Compara el siguiente ticket recién procesado con el historial de tickets del mismo usuario.
-Determina si existe un posible duplicado basándote en estos criterios:
-- Mismo importe total (±0.01 €)
-- Misma fecha de gasto
-- Mismo proveedor o NIF de proveedor
-
-Devuelve:
-{
-  "es_duplicado_probable": true | false,
-  "confianza": "alta" | "media" | "baja",
-  "registro_coincidente_id": "",    // null si no hay coincidencia
-  "motivo": ""
-}
-```
-*(Detección de duplicados; ticket de la historia de "aprobación".)*
+**💡 Nota explicativa (Criterio Humano):**
+En lugar de aceptar código de API a ciegas, utilicé el agente como una herramienta de rastreo y depuración profunda. Definí estrictamente el contrato HTTP de los endpoints (GET para hidratar modales, PATCH para mutaciones) y obligué al asistente a revisar la traza completa de la petición cuando se detectaron respuestas estáticas hardcodeadas.
 
 ---
 
-### 7. Pull Requests
+## 5. Historias de Usuario
 
-**Prompt 1:** *Sin prompts todavía. La Entrega 1 no incluye generación de código: este apartado se completará en la Entrega 2, cuando se generen las pull requests con el coding agent (Claude Code / GitHub Copilot, a definir) y se documenten los ajustes humanos aplicados al código generado antes de cada PR.*
+**Prompt 1 (Generación de HUs core):**
+> "Crea la propuesta de especificación para la historia HU-01, tal como está definida en la sección 5 de @readme.md. Genera la propuesta para HU-02 y HU-03."
+
+**Prompt 2 (Ajuste manual de visibilidad por rol):**
+> "He revisado el comportamiento y necesito hacer aclaraciones sobre visibilidad. Filtro por Rol: Empleado solo ve sus propios gastos. Aprobador / Admin: Visibilidad total de todos los usuarios. Aplica esto a Gastos Aprobados, Rechazados y Pendientes."
+
+**Prompt 3 (Inclusión de alcance extendido):**
+> "Quita el DOCUMENTADA, vamos a implementarlo aunque no esté en el MVP. Crea la propuesta de especificación para la historia HU-07 (Informes), tal como está definida en el readme."
+
+**💡 Nota explicativa (Criterio Humano):**
+El asistente tendía a mezclar permisos y no aislar la información. Apliqué correcciones manuales para garantizar que las historias de usuario reflejaran un control de acceso basado en roles (RBAC) estricto. Además, amplié el MVP original integrando flujos adicionales (Combustible e Informes) gestionando los deltas a través de un flujo estructurado con OpenSpec en el IDE.
+
+---
+
+## 6. Tickets de Trabajo
+
+**Prompt 1 (Ticket: Extracción JSON Estricta):**
+> "Eres un sistema de extracción de datos de documentos financieros. Analiza la imagen adjunta y extrae los campos en formato JSON estricto. Si no está presente, devuelve null. Indica el nivel de confianza (alto/medio/bajo). Devuelve únicamente el JSON, sin bloques de código markdown."
+
+**Prompt 2 (Ticket: Reglas de Validación de Negocio):**
+> "Valida el siguiente JSON extraído. Aplica las siguientes reglas y devuelve un JSON: 1. base_imponible + iva_importe = importe_total (±0.02). 2. Fecha no futura ni >5 años. 3. Importe positivo. 4. Si forma_pago es null, pendiente revisión humana. Devuelve: valido (boolean), errores, advertencias, campos_pendientes."
+
+**Prompt 3 (Ticket: Lógica de Duplicados):**
+> "Compara el siguiente ticket con el historial del usuario. Determina duplicado basado en: Mismo importe (±0.01), misma fecha, mismo NIF proveedor. Devuelve JSON con: es_duplicado, confianza, registro_coincidente_id, motivo."
+
+**💡 Nota explicativa (Criterio Humano):**
+Para los tickets relacionados con el motor de IA, no pedí implementaciones genéricas. Especifiqué la entrada y salida exacta (contratos JSON estrictos sin markdown) y definí las tolerancias matemáticas (±0.02€) para evitar que el LLM rompiera la integración del backend con alucinaciones de formato.
+
+---
+
+## 7. Pull Requests
+
+**Prompt 1 (Diseño de la Suite E2E):**
+> "Analiza la especificación actual y diseña los casos de prueba E2E necesarios para validar los cambios. Los tests deberán implementarse con playwright y organizarse bajo tests/e2e/<test-case>/<scenario>."
+
+**Prompt 2 (Control de Calidad de Tests):**
+> "He revisado el reporte y todos los tests e2e salen como 'skipped', un test 'skipped' NO es válido. Proporciona la evidencia de que la ejecución es completa."
+
+**Prompt 3 (UI UX Refactor - Separación Lectura/Escritura):**
+> "Explora el rediseño de la UI de lectura/escritura: /captura y /combustible como pantallas de lectura (tabs con conteo, estado persistido en URL) y la escritura bajo demanda (sheet full-screen). Genera la propuesta del cambio improve-ui-read-write-flow con los deltas de spec."
+
+**💡 Nota explicativa (Criterio Humano):**
+Actué como un "gatekeeper" de calidad. Cuando el agente generó tests en Playwright que se saltaban escenarios (skipped), rechacé el PR virtual exigiendo pruebas e2e ejecutables en verde reales. Además, el rediseño de UX/UI se guio paso a paso utilizando un plan de iteraciones, asegurando el ritmo humano en las validaciones antes de dar por cerrado el refactor.
